@@ -3,7 +3,8 @@ services:
     image: prestashop/prestashop:8
     environment:
       PS_INSTALL_AUTO: "1"
-      PS_DOMAIN: myshop.metrocart.store
+      PS_DOMAIN: ${SERVICE_FQDN_PRESTASHOP}
+      PS_HANDLE_DYNAMIC_DOMAIN: "1"
       DB_SERVER: db
       DB_NAME: prestashop
       DB_USER: prestashop
