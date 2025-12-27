@@ -1,31 +1,43 @@
+version: "3.8"
+
 services:
   prestashop:
     image: prestashop/prestashop:8
     environment:
-      PS_INSTALL_AUTO: "1"
-      PS_DOMAIN: myshop.metrocart.store
-      PS_ENABLE_SSL: "1"
+      PS_INSTALL_AUTO: '1'
+      # Use domain from .env
+      PS_DOMAIN: "${SERVICE_FQDN_PRESTASHOP}"
+      PS_ENABLE_SSL: '1'
       DB_SERVER: db
       DB_NAME: prestashop
       DB_USER: prestashop
-      DB_PASSWD: "${DB_PASSWD:-MySecret#}"
-      ADMIN_MAIL: aboelyoos@gmail.com
-      ADMIN_PASSWD: Changeme!
-      PS_COUNTRY: US
-      PS_LANGUAGE: en
+      DB_PASSWD: "${DB_PASSWD}"
+      ADMIN_MAIL: "aboelyoos@gmail.com"
+      ADMIN_PASSWD: "Changeme!"
+      PS_COUNTRY: "US"
+      PS_LANGUAGE: "en"
+      # Optional but can help with links/canonical URLs
+      PS_SHOP_URL: "${SERVICE_URL_PRESTASHOP}"
+      # Fix Apache "ServerName" warning
+      APACHE_SERVER_NAME: "${SERVICE_FQDN_PRESTASHOP}"
     volumes:
       - prestashop_data:/var/www/html
     depends_on:
       - db
+    # ⚠️ If you're using Coolify, do NOT add ports here; Coolify handles routing.
+    # ports:
+    #   - "8080:80"
 
   db:
     image: mariadb:10.6
-    command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
+    command: >
+      --transaction-isolation=READ-COMMITTED
+      --binlog-format=ROW
     environment:
-      MARIADB_ROOT_PASSWORD: "${DB_ROOT_PASSWD:-MySecret#}"
-      MARIADB_DATABASE: prestashop
-      MARIADB_USER: prestashop
-      MARIADB_PASSWORD: "${DB_PASSWD:-MySecret#}"
+      MARIADB_ROOT_PASSWORD: "${DB_ROOT_PASSWD}"
+      MARIADB_DATABASE: "prestashop"
+      MARIADB_USER: "prestashop"
+      MARIADB_PASSWORD: "${DB_PASSWD}"
     volumes:
       - db_data:/var/lib/mysql
 
